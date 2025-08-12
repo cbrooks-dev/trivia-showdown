@@ -6,13 +6,21 @@ from . import services
 
 
 def home(request):
-    return render(request, 'home.html')
+    return render(request, "home.html")
+
 
 def get_trivia_data(request):
     trivia_data = services.get_trivia_data()
     try:
-        request.session['correct_answer'] = trivia_data['results'][0]['correct_answer']
+        request.session["correct_answer"] = trivia_data["results"][0]["correct_answer"]
     except Exception as e:
-        print(f'Could not parse for correct answer: {e}')
-        request.session['correct_answer'] = 'None'
+        print(f"Could not parse for correct answer: {e}")
+        request.session["correct_answer"] = "None"
     return JsonResponse(trivia_data)
+
+
+def get_correct_answer(request):
+    response = {
+        "correct_answer": request.session["correct_answer"],
+    }
+    return JsonResponse(response)
