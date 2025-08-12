@@ -31,12 +31,12 @@ def get_trivia_data() -> dict: # TODO: clean up db access and add user db persis
         tq.save()
         results = data["results"]
         tr = TriviaResults(
-            type=results["type"],
-            difficulty=results["difficulty"],
-            category=results["category"],
-            question=results["question"],
-            correct_answer=results["correct_answer"],
-            incorrect_answers=results["incorrect_answers"],
+            type=results[0]["type"],
+            difficulty=results[0]["difficulty"],
+            category=results[0]["category"],
+            question=results[0]["question"],
+            correct_answer=results[0]["correct_answer"],
+            incorrect_answers=results[0]["incorrect_answers"],
             trivia_question=tq,
         )
         tr.save()

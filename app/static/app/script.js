@@ -3,12 +3,23 @@ function checkAnswer(answer) {
   let user_answer = document.getElementById(answer);
   let correct_answer = null;
 
-  fetch("/get/correct/answer") // Get current correct answer
+  fetch("/get/correct/answer", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCookie("csrftoken"),
+    },
+    body: JSON.stringify({question: document.getElementById('question')}),
+  })
     .then((response) => {
       return response.json();
     })
     .then((data) => {
-      correct_answer = data["correct_answer"];
+      try {
+        correct_answer = data["correct_answer"];
+      } catch (error) {
+        correct_answer = null;
+      }
     })
     .catch((error) => {
       console.error("There was an error fetching correct answer: ", error);
@@ -41,7 +52,12 @@ function checkAnswer(answer) {
       for (let i = 0; i < 3; i++) {
         answers.push(data["results"][0]["incorrect_answers"][i]);
       }
-      // TODO: randomly assign answer choices to html buttons
+
+      // Randomly assign answer choices to html buttons
+      answers = answers.sort(() => Math.random() - 0.5);
+      for (let i = 0; i < answers.length; i++) {
+        document.getElementById("choice-" + (i + 1)).textContent = answers[i];
+      }
     })
     .catch((error) => {
       console.error("There was an error fetching data: ", error);

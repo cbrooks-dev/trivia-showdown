@@ -1,12 +1,20 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from . import services
+import json
 
 # Create your views here.
 
 
 def home(request):
-    return render(request, "home.html")
+    data = services.get_trivia_data()['results']
+    question = data[0]['question']
+    choices = []
+    choices.append(data[0]['correct_answer'])
+    for answer in data[0]['incorrect_answers']:
+        choices.append(answer)
+    choices.sort()
+    return render(request, "home.html", {'question': question, 'choices': choices})
 
 
 def get_trivia_data(request):
@@ -16,7 +24,8 @@ def get_trivia_data(request):
 
 
 def get_correct_answer(request):
-    question = request.GET.get('question')
+    data = json.loads(request.body)
+    question = data.get('question')
     if not question:
         return JsonResponse({'error': 'Missing "question" parameter'}, status=400)
 
