@@ -1,7 +1,8 @@
 import requests
+from .models import *
 
 
-def get_trivia_data() -> dict:
+def get_trivia_data() -> dict: # TODO: clean up db access and add user db persistence
     """Gets a trivia question and relevant data from opentdb."""
 
     mock_trivia_data = {
@@ -25,7 +26,30 @@ def get_trivia_data() -> dict:
         return mock_trivia_data
 
     if request.ok:
-        return request.json()
+        data = request.json()
+        tq = TriviaQuestion(response_code=data["response_code"])
+        tq.save()
+        results = data["results"]
+        tr = TriviaResults(
+            type=results["type"],
+            difficulty=results["difficulty"],
+            category=results["category"],
+            question=results["question"],
+            correct_answer=results["correct_answer"],
+            incorrect_answers=results["incorrect_answers"],
+            trivia_question=tq,
+        )
+        tr.save()
+        return data
     else:
         print(f"Bad request: {request.status_code}")
         return mock_trivia_data
+
+
+
+def get_correct_answer(question_text: str) -> dict:
+    try:
+        result = TriviaResults.objects.get(question=question_text)
+        return {'question': result.question, 'correct_answer': result.correct_answer}
+    except TriviaResults.DoesNotExist:
+        return {'error': 'Question not found'}

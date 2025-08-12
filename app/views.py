@@ -10,17 +10,15 @@ def home(request):
 
 
 def get_trivia_data(request):
+    print(request)
     trivia_data = services.get_trivia_data()
-    try:
-        request.session["correct_answer"] = trivia_data["results"][0]["correct_answer"]
-    except Exception as e:
-        print(f"Could not parse for correct answer: {e}")
-        request.session["correct_answer"] = "None"
     return JsonResponse(trivia_data)
 
 
 def get_correct_answer(request):
-    response = {
-        "correct_answer": request.session["correct_answer"],
-    }
-    return JsonResponse(response)
+    question = request.GET.get('question')
+    if not question:
+        return JsonResponse({'error': 'Missing "question" parameter'}, status=400)
+
+    result = services.get_correct_answer(question)
+    return JsonResponse(result)
