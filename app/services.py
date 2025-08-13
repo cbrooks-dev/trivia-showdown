@@ -2,7 +2,7 @@ import requests
 from .models import *
 
 
-def get_trivia_data() -> dict: # TODO: clean up db access and add user db persistence
+def get_trivia_data() -> dict:
     """Gets a trivia question and relevant data from opentdb."""
 
     mock_trivia_data = {

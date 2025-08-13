@@ -2,10 +2,11 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from . import services
 import json
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 # Create your views here.
 
-
+@ensure_csrf_cookie
 def home(request):
     data = services.get_trivia_data()['results'][0]
     question = data['question']
