@@ -7,11 +7,11 @@ import json
 
 
 def home(request):
-    data = services.get_trivia_data()['results']
-    question = data[0]['question']
+    data = services.get_trivia_data()['results'][0]
+    question = data['question']
     choices = []
-    choices.append(data[0]['correct_answer'])
-    for answer in data[0]['incorrect_answers']:
+    choices.append(data['correct_answer'])
+    for answer in data['incorrect_answers']:
         choices.append(answer)
     choices.sort()
     return render(request, "home.html", {'question': question, 'choices': choices})

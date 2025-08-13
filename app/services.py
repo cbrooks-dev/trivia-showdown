@@ -29,14 +29,14 @@ def get_trivia_data() -> dict: # TODO: clean up db access and add user db persis
         data = request.json()
         tq = TriviaQuestion(response_code=data["response_code"])
         tq.save()
-        results = data["results"]
+        results = data["results"][0]
         tr = TriviaResults(
-            type=results[0]["type"],
-            difficulty=results[0]["difficulty"],
-            category=results[0]["category"],
-            question=results[0]["question"],
-            correct_answer=results[0]["correct_answer"],
-            incorrect_answers=results[0]["incorrect_answers"],
+            type=results["type"],
+            difficulty=results["difficulty"],
+            category=results["category"],
+            question=results["question"],
+            correct_answer=results["correct_answer"],
+            incorrect_answers=results["incorrect_answers"],
             trivia_question=tq,
         )
         tr.save()

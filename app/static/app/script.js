@@ -1,6 +1,6 @@
 function checkAnswer(answer) {
   let is_correct = false;
-  let user_answer = document.getElementById(answer);
+  let user_answer = document.getElementById(answer).textContent;
   let correct_answer = null;
 
   fetch("/get/correct/answer", {
