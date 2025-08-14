@@ -1,5 +1,19 @@
 import requests
 from .models import *
+import json
+
+
+def home() -> dict:
+    """Gathers first question and choices to display upon rendering home html."""
+
+    data = get_trivia_data()["results"][0]
+    question = data["question"]
+    choices = []
+    choices.append(data["correct_answer"])
+    for answer in data["incorrect_answers"]:
+        choices.append(answer)
+    choices.sort()
+    return {"question": question, "choices": choices}
 
 
 def get_trivia_data() -> dict:
@@ -46,10 +60,16 @@ def get_trivia_data() -> dict:
         return mock_trivia_data
 
 
+def get_correct_answer(request) -> dict:
+    """Gets the correct answer of current question from TriviaResults objects."""
 
-def get_correct_answer(question_text: str) -> dict:
+    data = json.loads(request.body)
+    question_text = data.get("question")
+    if not question_text:
+        return {"error": 'Missing "question" parameter'}
+
     try:
         result = TriviaResults.objects.get(question=question_text)
-        return {'question': result.question, 'correct_answer': result.correct_answer}
+        return {"question": result.question, "correct_answer": result.correct_answer}
     except TriviaResults.DoesNotExist:
-        return {'error': 'Question not found'}
+        return {"error": "Question not found"}
