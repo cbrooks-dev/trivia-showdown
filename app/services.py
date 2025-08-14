@@ -1,6 +1,7 @@
 import requests
 from .models import *
 import json
+import html
 
 
 def home() -> dict:
@@ -40,7 +41,7 @@ def get_trivia_data() -> dict:
         return mock_trivia_data
 
     if request.ok:
-        data = request.json()
+        data = unescape_data(dict(request.json()))
         tq = TriviaQuestion(response_code=data["response_code"])
         tq.save()
         results = data["results"][0]
@@ -58,6 +59,19 @@ def get_trivia_data() -> dict:
     else:
         print(f"Bad request: {request.status_code}")
         return mock_trivia_data
+    
+    
+def unescape_data(data: dict) -> dict:
+    """Recursively unescapes HTML entities in all string values within a dictionary or list."""
+
+    if isinstance(data, dict):
+        return {k: unescape_data(v) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [unescape_data(item) for item in data]
+    elif isinstance(data, str):
+        return html.unescape(data)
+    else:
+        return data
 
 
 def get_correct_answer(request) -> dict:
