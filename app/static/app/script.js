@@ -15,6 +15,31 @@ function getCookie(name) {
 }
 const csrftoken = getCookie("csrftoken");
 
+/** Gathers data from server to handle current
+ * question and display new trivia question and answers.
+ */
+function get_new_data(answer) {
+  fetch("/get/new/data", { // TODO: create server side endpoint with logic
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": csrftoken,
+    },
+    body: JSON.stringify({
+      user_answer: document.getElementById(answer).textContent,
+    }),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      handle_new_data(data); // TODO: write function
+    })
+    .catch((error) => {
+      console.error("There was an error fetching new trivia data: ", error);
+    });
+}
+
 function checkAnswer(answer) {
   let is_correct = false;
   let user_answer = document.getElementById(answer).textContent;
