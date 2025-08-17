@@ -19,12 +19,17 @@ def home(request):
     )
 
 
-def get_trivia_data(request):
-    print(request)
-    trivia_data = services.get_trivia_data()
-    return JsonResponse(trivia_data)
+def get_new_data(request):
+    data = services.get_new_data(request)
+    return JsonResponse(data)
 
 
-def get_correct_answer(request):
-    result = services.get_correct_answer(request)
-    return JsonResponse(result)
+# def get_trivia_data(request):
+#     print(request)
+#     trivia_data = services.get_trivia_data()
+#     return JsonResponse(trivia_data)
+
+
+# def get_correct_answer(request):
+#     result = services.get_correct_answer(request)
+#     return JsonResponse(result)

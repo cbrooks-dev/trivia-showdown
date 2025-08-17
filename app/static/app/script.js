@@ -26,6 +26,7 @@ function get_new_data(answer) {
       "X-CSRFToken": csrftoken,
     },
     body: JSON.stringify({
+      question: document.getElementById.question.textContent,
       user_answer: document.getElementById(answer).textContent,
     }),
   })
@@ -40,76 +41,76 @@ function get_new_data(answer) {
     });
 }
 
-function checkAnswer(answer) {
-  let is_correct = false;
-  let user_answer = document.getElementById(answer).textContent;
-  let correct_answer = null;
+// function checkAnswer(answer) {
+//   let is_correct = false;
+//   let user_answer = document.getElementById(answer).textContent;
+//   let correct_answer = null;
 
-  fetch("/get/correct/answer", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRFToken": csrftoken,
-    },
-    body: JSON.stringify({
-      question: document.getElementById("question").textContent,
-    }),
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      try {
-        correct_answer = data["correct_answer"];
-      } catch (error) {
-        correct_answer = null;
-      }
+//   fetch("/get/correct/answer", {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//       "X-CSRFToken": csrftoken,
+//     },
+//     body: JSON.stringify({
+//       question: document.getElementById("question").textContent,
+//     }),
+//   })
+//     .then((response) => {
+//       return response.json();
+//     })
+//     .then((data) => {
+//       try {
+//         correct_answer = data["correct_answer"];
+//       } catch (error) {
+//         correct_answer = null;
+//       }
 
-      if (user_answer == correct_answer) {
-        // Check if correct answer chosen
-        is_correct = true;
-      }
+//       if (user_answer == correct_answer) {
+//         // Check if correct answer chosen
+//         is_correct = true;
+//       }
 
-      if (is_correct) {
-        // Change to corresponding text color
-        document.getElementById(answer).style.color = "green";
-      } else {
-        document.getElementById(answer).style.color = "red";
-      }
+//       if (is_correct) {
+//         // Change to corresponding text color
+//         document.getElementById(answer).style.color = "green";
+//       } else {
+//         document.getElementById(answer).style.color = "red";
+//       }
 
-      if (is_correct) {
-        document.getElementById(answer).style.color = "green";
-      } else {
-        document.getElementById(answer).style.color = "red";
-      }
+//       if (is_correct) {
+//         document.getElementById(answer).style.color = "green";
+//       } else {
+//         document.getElementById(answer).style.color = "red";
+//       }
 
-      setTimeout(() => {
-        document.getElementById(answer).style.color = "white";
+//       setTimeout(() => {
+//         document.getElementById(answer).style.color = "white";
 
-        // Fetch new question inside the timeout so color reset happens first
-        fetch("/get/trivia/data")
-          .then((response) => response.json())
-          .then((data) => {
-            let answers = [];
-            document.getElementById("question").textContent =
-              data["results"][0]["question"];
-            answers.push(data["results"][0]["correct_answer"]);
-            for (let i = 0; i < 3; i++) {
-              answers.push(data["results"][0]["incorrect_answers"][i]);
-            }
+//         // Fetch new question inside the timeout so color reset happens first
+//         fetch("/get/trivia/data")
+//           .then((response) => response.json())
+//           .then((data) => {
+//             let answers = [];
+//             document.getElementById("question").textContent =
+//               data["results"][0]["question"];
+//             answers.push(data["results"][0]["correct_answer"]);
+//             for (let i = 0; i < 3; i++) {
+//               answers.push(data["results"][0]["incorrect_answers"][i]);
+//             }
 
-            answers = answers.sort(() => Math.random() - 0.5);
-            for (let i = 0; i < answers.length; i++) {
-              document.getElementById("choice-" + (i + 1)).textContent =
-                answers[i];
-            }
-          })
-          .catch((error) =>
-            console.error("There was an error fetching data: ", error)
-          );
-      }, 2000);
-    })
-    .catch((error) => {
-      console.error("There was an error fetching correct answer: ", error);
-    });
-}
+//             answers = answers.sort(() => Math.random() - 0.5);
+//             for (let i = 0; i < answers.length; i++) {
+//               document.getElementById("choice-" + (i + 1)).textContent =
+//                 answers[i];
+//             }
+//           })
+//           .catch((error) =>
+//             console.error("There was an error fetching data: ", error)
+//           );
+//       }, 2000);
+//     })
+//     .catch((error) => {
+//       console.error("There was an error fetching correct answer: ", error);
+//     });
+// }
