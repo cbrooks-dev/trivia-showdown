@@ -89,6 +89,20 @@ def get_trivia_data() -> dict:
     except Exception as e:
         print(f"Could not get trivia data: {e}")
         return mock_trivia_data
+    
+    trivia_question = TriviaQuestion(response_code=mock_trivia_data.get("response_code"))
+    trivia_question.save()
+    r = mock_trivia_data["results"][0]
+    trivia_results = TriviaResults(
+        type=r["type"],
+        difficulty=r["difficulty"],
+        category=r["category"],
+        question=r["question"],
+        correct_answer=r["correct_answer"],
+        incorrect_answers=r["incorrect_answers"],
+        trivia_question=trivia_question,
+    )
+    trivia_results.save()
 
     if request.ok:
         data = unescape_data(dict(request.json()))
@@ -127,8 +141,9 @@ def unescape_data(data: dict) -> dict:
 def get_correct_answer(question_text) -> str:
     """Gets the correct answer of current question from TriviaResults objects."""
 
-    try:
-        result = TriviaResults.objects.get(question=str.strip(question_text))
-        return result.correct_answer
-    except TriviaResults.DoesNotExist:
+    results = TriviaResults.objects.filter(question=str.strip(question_text))
+    if results.exists():
+        return results.first().correct_answer
+    else:
         return None
+    
