@@ -15,18 +15,20 @@ function getCookie(name) {
 }
 const csrftoken = getCookie("csrftoken");
 
-/** Gathers data from server to handle current
+/**
+ * Gathers data from server to handle current
  * question and display new trivia question and answers.
+ * @param {*} answer the choice selected by user.
  */
-function get_new_data(answer) {
-  fetch("/get/new/data", { // TODO: create server side endpoint with logic
+function getNewData(answer) {
+  fetch("/get/new/data", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "X-CSRFToken": csrftoken,
     },
     body: JSON.stringify({
-      question: document.getElementById.question.textContent,
+      question: document.getElementById("question").textContent,
       user_answer: document.getElementById(answer).textContent,
     }),
   })
@@ -34,11 +36,46 @@ function get_new_data(answer) {
       return response.json();
     })
     .then((data) => {
-      handle_new_data(data); // TODO: write function
+      let is_handled = handleNewData(data, answer);
+      if (!is_handled) {
+        console.error(data["error"]);
+      }
     })
     .catch((error) => {
       console.error("There was an error fetching new trivia data: ", error);
     });
+}
+
+/**
+ * Updates the UI with the new data.
+ * @param {*} data the data to be handled.
+ * @returns boolean value indicating whether data was able to be handled.
+ */
+function handleNewData(data, answer) {
+  if (data["error"]) {
+    return false; // Data was not handled
+  }
+
+  let question = data["question"];
+  let choices = data["choices"];
+  let userCorrect = data["user_correct"];
+  // let popupData = data["popup_data"]; TODO: finish handling of popup data once server side sends data
+
+  if (userCorrect) {
+    document.getElementById(answer).style.color = "green";
+  } else {
+    document.getElementById(answer).style.color = "red";
+  }
+
+  setTimeout(() => {
+    document.getElementById("question").textContent = question;
+    document.getElementById(answer).style.color = "white";
+    for (let i = 0; i < choices.length; i++) {
+      document.getElementById("choice-" + (i + 1)).textContent = choices[i];
+    }
+  }, 2000);
+
+  return true; // Data was handled
 }
 
 // function checkAnswer(answer) {

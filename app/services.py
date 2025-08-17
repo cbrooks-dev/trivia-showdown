@@ -2,6 +2,7 @@ import requests
 from .models import *
 import json
 import html
+import random
 
 
 def home() -> dict:
@@ -26,6 +27,9 @@ def get_new_data(request) -> dict:
     trivia_data = get_extracted_data()
 
     correct_answer = get_correct_answer(question)
+    if correct_answer is None:
+        return {"error": "Question not found in the database."}
+
     user_correct = is_user_correct(user_answer, correct_answer)
 
     # popup_data = get_popup_data() TODO: write function
@@ -37,7 +41,7 @@ def get_new_data(request) -> dict:
     return new_data
 
 
-def is_user_correct(user_answer, correct_answer):
+def is_user_correct(user_answer, correct_answer) -> bool:
     """Checks if user answer matches the question's correct answer."""
 
     try:
@@ -58,7 +62,7 @@ def get_extracted_data() -> dict:
 
     for answer in data["incorrect_answers"]:
         choices.append(answer)
-    choices.sort()
+    random.shuffle(choices)
 
     return {"question": question, "choices": choices}
 
@@ -120,11 +124,11 @@ def unescape_data(data: dict) -> dict:
         return data
 
 
-def get_correct_answer(question_text) -> dict:
+def get_correct_answer(question_text) -> str:
     """Gets the correct answer of current question from TriviaResults objects."""
 
     try:
-        result = TriviaResults.objects.get(question=question_text)
-        return {"question": result.question, "correct_answer": result.correct_answer}
+        result = TriviaResults.objects.get(question=str.strip(question_text))
+        return result.correct_answer
     except TriviaResults.DoesNotExist:
-        return {"error": "Question not found"}
+        return None
